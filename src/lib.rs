@@ -4,4 +4,5 @@
 
 mod strsplit;
 
+pub use strsplit::until_char;
 pub use strsplit::*;
