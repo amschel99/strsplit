@@ -5,7 +5,7 @@
 ///
 /// ```rust
 /// pub struct Strsplit<'a> {
-///     remainder: &'a str,
+///     remainder: Option<&'a str>,
 ///     delimiter: &'a str,
 /// }
 /// ```
@@ -20,7 +20,7 @@
 ///  impl Strsplit <_>{
 /// fn new (haystack:&str, delimiter:&str)->Self{
 /// Self {
-/// remainder:haystack,
+/// remainder:Some(haystack),
 /// delimiter
 /// }
 /// }
@@ -31,7 +31,7 @@
 /// impl<'a> Strsplit<'a> {
 /// fn new(haystack: &'a str, delimiter: &'a str) -> Self {
 ///   Self {
-///      remainder: haystack,
+///      remainder: Some(haystack),
 ///     delimiter,
 /// }
 ///}
@@ -44,14 +44,14 @@
 ///
 
 pub struct Strsplit<'a> {
-    remainder: &'a str,
+    remainder: Option<&'a str>,
     delimiter: &'a str,
 }
 
 impl<'a> Strsplit<'a> {
     fn new(haystack: &'a str, delimiter: &'a str) -> Self {
         Self {
-            remainder: haystack,
+            remainder: Some(haystack),
             delimiter,
         }
     }
@@ -60,16 +60,14 @@ impl<'a> Strsplit<'a> {
 impl<'a> Iterator for Strsplit<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(next_delim) = self.remainder.find(self.delimiter) {
-            let until_delimiter = &self.remainder[..next_delim];
-            self.remainder = &self.remainder[(next_delim + self.delimiter.len())..];
+        let ref mut remainder = self.remainder?;
+
+        if let Some(next_delim) = remainder.find(self.delimiter) {
+            let until_delimiter = &remainder[..next_delim];
+            *remainder = &remainder[(next_delim + self.delimiter.len())..];
             Some(until_delimiter)
-        } else if self.remainder.is_empty() {
-            None
         } else {
-            let rest = self.remainder;
-            self.remainder = "";
-            Some(rest)
+            self.remainder.take()
         }
     }
 }
