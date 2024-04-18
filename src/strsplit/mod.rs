@@ -60,7 +60,7 @@ impl<'a> Strsplit<'a> {
 impl<'a> Iterator for Strsplit<'a> {
     type Item = &'a str;
     fn next(&mut self) -> Option<Self::Item> {
-        let ref mut remainder = self.remainder?;
+        let remainder = self.remainder.as_mut()?;
 
         if let Some(next_delim) = remainder.find(self.delimiter) {
             let until_delimiter = &remainder[..next_delim];
@@ -70,4 +70,11 @@ impl<'a> Iterator for Strsplit<'a> {
             self.remainder.take()
         }
     }
+}
+
+#[test]
+fn it_works() {
+    let haystack = "a,b,c,d,e,f";
+    let letters: Vec<_> = Strsplit::new(&haystack, ",").collect();
+    assert_eq!(letters, vec!["a", "b", "c", "d", "e", "f"]);
 }
