@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-strsplit = "0.1"
+strsplit = "0.1.1"
 
 ```
 Then you can use it in your code:
